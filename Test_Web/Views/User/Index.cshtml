@@ -1,0 +1,174 @@
+﻿
+@model Test_Core.Models.GridModel<Test_Model.Models.User>
+@using Test_Library.Extensions
+@{
+
+    var authModel = (Test_Library.Models.AuthActionModel)ViewBag.AuthValue;
+    Layout = Test_Library.Helper.FunctionHelper.GetLayout(ViewBag.AreaCodeValue);
+    var roles = (List<Test_Model.Models.Role_Custom>)ViewBag.Roles;
+}
+
+<div>
+    <h1 class="text-white-50">Danh sách người dùng</h1>
+</div>
+
+<div class="row">
+    @using (Html.BeginForm("Index", "User", FormMethod.Get, new { id = "frmUser" }))
+    {
+        <div class="col-md-3 col-lg-3 col-xs-12 col-sm-12 divboxmd">
+            <input type="text" name="key" value="@ViewBag.keyValue" placeholder=" Tên..." class="form-control" />
+        </div>
+        <div class="col-md-3 col-lg-3 col-xs-12 col-sm-12 divboxmd">
+            <button class="btn btn-white btn-primary" type="submit"><i class="fa fa-search" aria-hidden="true"></i> Tìm kiếm </button>
+            <a href='@Url.Action("Index", "User",new { AreaCode = ViewBag.AreaCodeValue })' class="btn btn-primary btn-white" type="submit">
+                <i class="fa fa-refresh" aria-hidden="true"></i>
+                Reset
+            </a>
+        </div>
+    }
+</div>
+<div class="row">
+    <div class="col-xs-12">
+        @await Html.PartialAsync("~/Views/Shared/Partials/ActionPartial.cshtml", new Test_Library.Models.AuthPartialModel()
+        {
+       ActionName = "Create",
+       ControllerName = "User",
+       model = new { AreaCode = ViewBag.AreaCodeValue },
+       Auth_Value = authModel
+
+    })
+    </div>
+</div>
+<div class="hr hr-18 dotted hr-24"></div>
+
+<div class=" row">
+    <div class="col-xs-12">
+        <table class="table table-bordered table-hover">
+            <thead>
+                <tr>
+                    <th>Tài khoản</th>
+                    <th>Họ tên</th>
+                    <th>Loại</th>
+                    <th>Quyền</th>
+                    <th>Trạng thái</th>
+                    <th>Thao tác</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model.datas.Any())
+                {
+
+                    foreach (var item in Model.datas)
+                    {
+                        var lstRole = roles.Where(n => n.UserId == item.Id);
+                        var strRole = lstRole != null && lstRole.Count() > 0 ? string.Join("", lstRole.Select(n => string.Format("{0}", !string.IsNullOrEmpty(n.RoleName) ? string.Format("<p><i class=\"ace-icon fa fa-caret-right\"></i> {0}</p>", n.RoleName) : ""))) : "";
+                <tr>
+                    <td>@item.Username</td>
+                    <td>@item.Name</td>
+                    <td class="text-left">
+                        @if (!string.IsNullOrEmpty(strRole))
+                        {
+                            @Html.Raw(strRole)
+                        }
+
+                    </td>
+                    <td>
+                        @if (item.Admin == true)
+                        {
+                            <span class="label label-sm label-danger">Admin</span>
+                        }
+                        else
+                        {
+                            <span class="label label-sm label-primary">User</span>
+                        }
+                    </td>
+                    <td class="center">
+                        @if (item.Active == true)
+                        {
+                            <span class="label label-sm label-success">Kích hoạt</span>
+                        }
+                        else
+                        {
+                            <span class="label label-sm label-warning">Không kích hoạt</span>
+                        }
+                    </td>
+                    <td>
+                        <div class="btn-group">
+
+                            @await Html.PartialAsync("~/Views/Shared/Partials/ActionPartial.cshtml", new Test_Library.Models.AuthPartialModel()
+                            {
+    ControllerName = "User",
+    ActionName = "Update",
+    RecordId = "",
+    model = new { id = item.Id, AreaCode = ViewBag.AreaCodeValue },
+    Auth_Value = authModel
+})
+
+
+                            @await Html.PartialAsync("~/Views/Shared/Partials/ActionPartial.cshtml", new Test_Library.Models.AuthPartialModel()
+                            {
+  ControllerName = "User",
+  ActionName = "Delete",
+  RecordId = item.Id,
+  model = null,
+  Auth_Value = authModel
+})
+                        </div>
+                    </td>
+                </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+    @if (Model.datas.Any())
+    {
+        <div class="col-xs-12">
+            <div class="pull-right">
+
+
+                @Html.PagingFooter(Model.Totapage, Model.pageNumber, Model.pageSize, "pagination", x => Url.Action("Index", "User", new
+           {
+               page = x,
+               key = ViewBag.keyValue,
+               AreaCode = ViewBag.AreaCodeValue
+           }))
+            </div>
+        </div>
+    }
+</div>
+<input type="hidden" id="Confirm_delete" value="Thông báo" />
+<input type="hidden" id="del_Success" value="Xóa thành công" />
+<input type="hidden" id="noti" value="Thông báo" />
+@section scripts{
+    <script>
+        $(document).ready(function () {
+
+            $(".btnDelete").click(function () {
+                var cmd = $(this);
+                var id = cmd.attr('idata');
+
+                bootbox.confirm($("#Confirm_delete").val(), function (result) {
+                    if (result) {
+                        JSHelper.AJAX_Delete('/User/Delete', id)
+                            .success(function (response) {
+                                if (response.isSuccess) {
+                                    cmd.parent().parent().parent().fadeOut();
+                                    toastr.success($("#del_Success").val(), $("#noti").val())
+                                } else {
+                                    toastr.error(response.Message)
+                                }
+                            });
+                    }
+                })
+            });
+
+            $(".btnExport").click(function () {
+                //JSHelper.AJAX_SendRequest('/User/Export', null);
+                $("#export").val("1");
+
+                $("#frmUser").submit();
+            });
+        });
+    </script>
+}

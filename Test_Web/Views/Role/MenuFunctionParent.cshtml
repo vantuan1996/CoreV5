@@ -1,0 +1,39 @@
+﻿
+@model Test_Library.Models.RoleSelectedModel
+
+<ul class="treeCustom">
+    @{
+        if (Model.Data_Tree.Any())
+        {
+            var lstparent = Model.Data_Tree.Where(n => n.ParentId.Equals("0") && n.MenuName != "App");
+
+            foreach (var item in lstparent.OrderBy(n => n.OrderNumber))
+            {
+                var datachild = Model.Data_Tree.Where(n => n.ParentId == item.Id).ToList();
+                <li>
+                    <label style="margin-bottom: 0px;">
+                        <input @string.Format("{0}", Model.Selected.Contains(item.Id) ? "checked" : "") type="checkbox" name="chkCheckBox" id="chkCheckBox" value="@item.Id" class="ace chkCheckBox" />
+                        <span class="lbl"></span>
+                    </label>
+                    <span class="liMenuFunction" style="font-weight: 700; color: #333;">
+                        <span>@item.OrderNumber</span>
+                        <span>@item.MenuName</span>
+
+                    </span>
+                    @if (datachild.Any())
+                    {
+                        @await Html.PartialAsync("MenuFunctionChild", new Test_Library.Models.RoleSelectedModel()
+                   {
+                        Data_Tree = Model.Data_Tree,
+                        Data_Child = datachild,
+                        Selected = Model.Selected
+           })
+                    }
+                </li>
+
+            }
+
+        }
+    }
+
+</ul>

@@ -1,0 +1,67 @@
+﻿@model Test_Library.Models.SessionModel
+@{
+    var langLst = (Test_Library.Models.SelectListModel_Chosen)ViewBag.Lstlanguage;
+}
+<div class="navbar-container ace-save-state">
+    <button type="button" class="navbar-toggle pull-left" id="menu-toggler" data-target="#sidebar"></button>
+    <span class="sr-only">Toggle sidebar</span>
+
+    <span class="icon-bar"></span>
+
+    <span class="icon-bar"></span>
+
+    <span class="icon-bar"></span>
+
+    <div class="navbar-header pull-left">
+        <a href="@Url.Action("Index","Home", new { Area = "Parking"})" class="navbar-brand">
+            <small>
+                <i class="fa fa-leaf"></i>
+                @await Component.InvokeAsync("Website")
+            </small>
+        </a>
+    </div>
+
+    <div class="navbar-buttons navbar-header pull-right" role="navigation">
+        <ul class="nav ace-nav">
+            <li class="light-blue dropdown-modal">
+                <a href="#" data-toggle="dropdown" class="dropdown-toggle">
+                    @if (Model != null && !string.IsNullOrWhiteSpace(Model.Avatar))
+                    {
+                        <img class="nav-user-photo" src="@Model.Avatar" alt="@Model.Name" />
+                    }
+                    <span class="user-info">
+                        <small>Welcome IT</small>
+                        @if (Model != null)
+                        {
+                            <span>@Model.Name</span>
+                        }
+
+                    </span>
+                    <i class="ace-icon fa fa-caret-down" ></i>
+                </a>
+                <ul>
+                    <li>
+                        <a href='@Url.Action("AccountInfo","User", new{id ="@Model.UserId",AreaCode ="Parking"})'>
+                            <i class="ace-icon fa fa-users"></i>
+                            Profile
+                        </a>
+
+                    </li>
+                    <li class="divider"></li>
+                    <li>
+                        <a href="javascript:void(0)" class="btnLic">
+                            <i class="ace-icon fa fa-arrow-down"></i>
+                            @await Component.InvokeAsync("Language", new { })
+                        </a>
+                    </li>
+                    <li class="divider"></li>
+                    <li>
+                        <a href="@Url.Action("Logout","Login" , new { userid = Model.UserId, Area = ""})">
+                        <i class="ace-icon fa fa-power-off" ></i>
+                        Đăng xuất</a>
+                    </li>
+                </ul>
+            </li>
+        </ul>
+    </div>
+</div>

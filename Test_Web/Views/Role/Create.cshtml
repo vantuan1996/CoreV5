@@ -1,0 +1,151 @@
+﻿@model Test_Model.Models.Role_Submit
+
+@{
+    ViewBag.Title = "Thêm mới vai trò";
+    var menus = (List<string>)ViewBag.MenuFunctions;
+    Layout = Test_Library.Helper.FunctionHelper.GetLayout(ViewBag.AreaCodeValue);
+}
+
+<div class="page-header">
+    <h1>
+      Thêm mới
+    </h1>
+</div>
+
+<div class="row">
+    @if (TempData["Success"] != null)
+    {
+        <strong style="color:green">@TempData["Success"]</strong>
+    }
+    <strong style="color:red">@ViewBag.Error</strong>
+</div>
+
+<div class="row">
+
+    @using (Html.BeginForm("Create", "Role", FormMethod.Post, new
+    {
+        encType = "multipart/form-data",
+        @class =
+   "form-horizontal",
+        @role = "form",
+        @id = "frmRole"
+    }))
+    {
+
+        @Html.ValidationSummary(false, "", new { @class = "text-danger" })
+        @Html.HiddenFor(n => n.MenuFunctionIds)
+        @Html.Hidden("SaveAndCountinue", false)
+        @Html.Hidden("AreaCode", (string)ViewBag.AreaCodeValue)
+
+        <div class="col-xs-7">
+            <div class="form-group">
+                <label class="col-sm-4 control-label no-padding-right">
+                   Tiêu đề <span style="color:red">*</span>
+                </label>
+                <div class="col-sm-6 col-xs-12">
+                    @Html.TextBoxFor(n => n.RoleName, new
+                    {
+                        @class = "form-control",
+                    @placeholder = ""
+                    }) @Html.ValidationMessageFor(n =>
+n.RoleName, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-4 control-label no-padding-right">Mô tả</label>
+                <div class="col-sm-6 col-xs-12">
+                    @Html.TextAreaFor(n => n.Description, new
+                    {
+                        @class = "form-control",
+                    @placeholder = ""
+                    }) @Html.ValidationMessageFor(n =>
+n.Description, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-4 control-label no-padding-right">Kích hoạt</label>
+                <div class="col-sm-8">
+                    <label class="line-height-250">
+                        @Html.CheckBoxFor(n => n.Active, new { @class = "ace" })
+                        <span class="lbl"></span>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xs-5">
+            @await Html.PartialAsync("MenuFunctionParent", new Test_Library.Models.RoleSelectedModel()
+            {
+                Data_Tree = Model.Data_Tree,
+                Selected = Model.MenuFunctions
+            })
+        </div>
+
+        <div class="ace-settings-container" id="ace-settings-container" style="position: fixed; top: 155px;">
+            <div class="btn btn-app btn-xs btn-grey ace-settings-btn open" id="ace-settings-btn">
+                <i class="ace-icon fa fa-cog bigger-130"></i>
+            </div>
+
+            <div class="ace-settings-box clearfix open" id="ace-settings-box">
+                <!-- /.pull-left -->
+                <div class="bg-rightbox">
+                    <div class="clearfix lineButton">
+                        <div class="col-md-12 input-group">
+                            <button class="btn btn-success" type="submit" id="Countinue">
+                                <i class="ace-icon fa fa-refresh bigger-110"></i>
+                             Lưu
+                            </button>
+                            <button class="btn btn-primary" type="submit">
+                                <i class="ace-icon fa fa-check bigger-110"></i>
+                               Lưu
+                            </button>
+                            <a href='@Url.Action("Index", new {AreaCode = ViewBag.AreaCodeValue})' class="btn btn-yellow">
+                                <i class="ace-icon fa fa-chevron-circle-left bigger-110"></i>
+                                Quay lại
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <!-- /.pull-left -->
+            </div>
+            <!-- /.ace-settings-box -->
+        </div>
+    }
+</div>
+
+@section scripts{
+    <script>
+    $(document).ready(function () {
+        $("#Countinue").click(function () {
+            $("#SaveAndCountinue").val("true");
+        });
+
+            $(".chkCheckBox").click(function() {
+                var cmd = $(this);
+                cmd.parent().parent().find('ul li input[type=checkbox]').prop('checked', cmd.is(':checked'));
+            });
+
+            $("span.liMenuFunction").click(function() {
+                var cmd = $(this);
+                cmd.parent().find('ul li span.liMenuFunction').parent().parent().parent().fadeToggle();
+            });
+
+           $("#frmRole").submit(function () {
+                var lstId = "";
+
+                $("input[name='chkCheckBox']").each(function() {
+                    var cmd = $(this);
+                    var id = cmd.prop("value");
+
+                    if ($(this).is(":checked")) {
+                        lstId = lstId + id + ";";
+                    }
+                });
+
+                $("#MenuFunctionIds").val(lstId);
+            });
+    });
+    </script>
+}

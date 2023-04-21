@@ -1,0 +1,112 @@
+﻿@model List<Test_Model.Models.MenuFunction>
+@using Test_Library.Models
+@{
+    var authModel = (Test_Library.Models.AuthActionModel)ViewBag.AuthValue;
+}
+
+<div class="page-header">
+    <h1 class="text-body">Danh mục hệ thống</h1>
+</div>
+<div class="hr hr-18 dotted hr-24"></div>
+
+<div class="row">
+    <a href="@Url.Action("Create" , "MenuFunction", new { AreaCode = ViewBag.AreaCodeValue})" class="btn btn-sm btn-white btn-success">
+        <i class=" fa fa-plus"></i> Thêm mới
+    </a>
+    <a href='javascript:void(0)' class="btn btn-sm btn-white btn-danger" id="btnMultiDelete">
+        <i class=" fa fa-trash"></i>
+        Xóa nhiều
+    </a>
+</div>
+<div class="hr hr-18 dotted hr-24"></div>
+<div class="row">
+    <div class="col-xs-6 col-sm-6">
+        <ul class="treeCustom">
+            @{
+                if (Model.Any())
+                {
+                    var lsParrent = Model.Where(n => n.ParentId.Equals("0"));
+                    foreach (var item in lsParrent.OrderBy(n => n.OrderNumber))
+                    {
+                        var datachild = Model.Where(n => n.ParentId == item.Id).ToList();
+                        <li class="">
+                            <label style="margin-bottom: 0px;">
+                                <input class="ace chkCheckBox" type="checkbox" id="chCheck" name="chCheck" value="@item.Id" />
+                                <span class="lbl"></span>
+                            </label>
+                            <span class="liMenuFunction" style="font-weight: 700; color: #333;">
+                                @if (item.Active)
+                                {
+                                    <span>@item.OrderNumber</span>
+                                    <span>. @item.MenuName</span>
+                                }
+                                else
+                                {
+                                    <span style="text-decoration: line-through">
+                                        <span>@item.OrderNumber</span> <span>. @item.MenuName</span>
+                                    </span>
+                                }
+                            </span>
+                            <span>
+                                <a href="@Url.Action("Update", "MenuFunction" , new { id = item.Id.ToString(),AreaCode = ViewBag.AreaCodeValue})">
+                                    <i class="ace-icon fa fa-pencil-square-o"></i>
+                                </a>
+                            </span>
+                            @if (datachild.Any())
+                            {
+                                @await Html.PartialAsync("SubMenu", new Test_Library.Models.MenuFunctionTreeModel()
+                                {
+                               Data_Child = datachild,
+                               Data_All = Model,
+                               AreaCode = ViewBag.AreaCodeValue
+                           });
+                            }
+                        </li>
+                    }
+                }
+            }
+        </ul>
+    </div>
+</div>
+<input type="hidden" id="Confirm_delete" value="Bạn muốn xóa bản ghi này không ?" />
+<input type="hidden" id="del_Success" value="Xóa thành công" />
+<input type="hidden" id="noti" value="Thông báo" />
+
+@section scripts{
+    <script>
+        $(document).ready(function () {
+
+            $(".chkCheckBox").click(function () {
+                var cmd = $(this);
+                cmd.parent().parent().find("ul li input[type=checkbox]").prop('checked', cmd.is(':checked'));
+            });
+            $(".liMenuFunction").click(function () {
+                var cmd = $(this);
+                cmd.parent().find("ul li span.liMenuFunction").parent().parent().fadeToggle();
+            });
+            $("#btnMultiDelete").click(function () {
+
+                var lstId = "";
+                $("input[type=checkbox]").each(function () {
+                    var cmd = $(this);
+                    var id = cmd.prop("value");
+                    if ($(this).is(":checked")) {
+                        lstId = lstId + id + ";";
+                    }
+                })
+                bootbox.confirm($("#Confirm_delete").val(), function (result) {
+                    if (result) {
+                        JSHelper.AJAX_Delete('/MenuFunction/Delete', lstId)
+                            .done(function (reponse) {
+                                if (response.isSuccess) {
+                                    location.reload();
+                                } else {
+                                    toastr.Error(response.Message)
+                                }
+                            })
+                    }
+                })
+            })
+        });
+    </script>
+}

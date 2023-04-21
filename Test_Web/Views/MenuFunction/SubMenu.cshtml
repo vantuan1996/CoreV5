@@ -1,0 +1,49 @@
+﻿
+@model Test_Library.Models.MenuFunctionTreeModel
+
+<ul class="submenufunction">
+    @{
+        if (Model.Data_Child.Any())
+        {
+
+            foreach (var item in Model.Data_Child.OrderBy(n => n.OrderNumber))
+            {
+                var datachild = Model.Data_All.Where(n => n.ParentId == item.Id).ToList();
+        <li class="">
+            <label style="margin-bottom: 0px;">
+                <input class="ace chkCheckBox" type="checkbox" id="chCheck" name="chCheck" value="@item.Id" />
+                <span class="lbl"></span>
+            </label>
+            <span class="liMenuFunction" style="color: #666;">
+                @if (item.Active)
+                {
+                    <span>@item.OrderNumber</span> <span>. @item.MenuName</span>
+                }
+                else
+                {
+                    <span style="text-decoration: line-through">
+                        <span>@item.OrderNumber</span> <span>. @item.MenuName</span>
+                    </span>
+                }
+            </span>
+            <span>
+                <a href="@Url.Action("Update", "MenuFunction" , new { id = item.Id.ToString(),AreaCode = Model.AreaCode})">
+                    <i class="ace-icon fa fa-pencil-square-o"></i>
+                </a>
+            </span>
+            @if (datachild.Any())
+            {
+                @await Html.PartialAsync("SubMenu", new Test_Library.Models.MenuFunctionTreeModel()
+                {
+               Data_Child = datachild,
+               Data_All = Model.Data_All,
+               AreaCode = Model.AreaCode
+           });
+            }
+        </li>
+            }
+
+        }
+    }
+
+</ul>

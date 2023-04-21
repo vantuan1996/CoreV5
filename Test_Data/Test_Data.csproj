@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Test_Core\Test_Core.csproj" />
+    <ProjectReference Include="..\Test_Library\Test_Library.csproj" />
+    <ProjectReference Include="..\Test_Model\Test_Model.csproj" />
+  </ItemGroup>
+
+</Project>

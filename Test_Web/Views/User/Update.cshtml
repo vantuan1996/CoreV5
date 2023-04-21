@@ -1,0 +1,191 @@
+﻿@model Test_Model.Models.User_Submit
+
+@{
+    ViewBag.Title = "Thêm mới tài khoản";
+    Layout = Test_Library.Helper.FunctionHelper.GetLayout(ViewBag.AreaCodeValue);
+}
+
+<div class="page-header">
+    <h1>
+       Cập nhật
+    </h1>
+</div>
+
+<div class="row">
+    @if (TempData["Success"] != null)
+    {
+        <strong style="color:green">@TempData["Success"]</strong>
+    }
+    <strong style="color:red">@ViewBag.Error</strong>
+</div>
+
+<div class="row">
+
+    @using (Html.BeginForm("Update", "User", FormMethod.Post, new
+    {
+        encType = "multipart/form-data",
+        @class =
+   "form-horizontal",
+        @role = "form",
+        @id = "frmUser"
+    }))
+    {
+
+        @Html.ValidationSummary(false, "", new { @class = "text-danger" })
+        @Html.HiddenFor(n => n.RoleIds)
+        @Html.HiddenFor(n => n.Id)
+        @Html.Hidden("AreaCode", (string)ViewBag.AreaCodeValue)
+
+
+        <div class="col-xs-7">
+            <div class="form-group">
+                <label class="col-sm-4 control-label no-padding-right">
+                   Tài khoản <span style="color:red">*</span>
+                </label>
+                <div class="col-sm-6 col-xs-12">
+                    @Html.TextBoxFor(n => n.Username, new
+                    {
+                        @class = "form-control",
+                    @placeholder = ""
+                    }) @Html.ValidationMessageFor(n =>
+ n.Username, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-4 control-label no-padding-right"> Mật khẩu </label>
+                <div class="col-sm-6 col-xs-12">
+                    @Html.TextBoxFor(n => n.Password, new
+                    {
+                        @class = "form-control",
+                    @type = "password"
+                    }) @Html.ValidationMessageFor(n =>
+ n.Password, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-4 control-label no-padding-right"> Nhập lại password </label>
+                <div class="col-sm-6 col-xs-12">
+                    @Html.TextBoxFor(n => n.RePassword, new
+                    {
+                        @class = "form-control",
+                    @type = "password"
+                    }) @Html.ValidationMessageFor(n =>
+ n.RePassword, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-4 control-label no-padding-right">Họ tên</label>
+                <div class="col-sm-6 col-xs-12">
+                    @Html.TextBoxFor(n => n.Name, new
+                    {
+                        @class = "form-control",
+                    @placeholder = "Họ tên"
+                    }) @Html.ValidationMessageFor(n =>
+ n.Name, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-4 control-label no-padding-right"> Admin </label>
+                <div class="col-sm-8">
+                    <label class="line-height-250">
+                        @Html.CheckBoxFor(n => n.isAdmin, new { @class = "ace" })
+                        <span class="lbl"></span>
+                    </label>
+                </div>
+            </div>
+         
+            <div class="form-group">
+                <label class="col-sm-4 control-label no-padding-right"> Kích hoạt </label>
+                <div class="col-sm-8">
+                    <label class="line-height-250">
+                        @Html.CheckBoxFor(n => n.Active, new { @class = "ace" })
+                        <span class="lbl"></span>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xs-5">
+            @await Html.PartialAsync("RolesPartial", new Test_Library.Models.UserSelectedModel()
+            {
+                Selected = Model.Roles,
+                Data_Role = Model.Data_Role
+            })
+        </div>
+
+        <div class="ace-settings-container" id="ace-settings-container" style="position: fixed; top: 155px;">
+            <div class="btn btn-app btn-xs btn-grey ace-settings-btn open" id="ace-settings-btn">
+                <i class="ace-icon fa fa-cog bigger-130"></i>
+            </div>
+
+            <div class="ace-settings-box clearfix open" id="ace-settings-box">
+                <!-- /.pull-left -->
+                <div class="bg-rightbox">
+                    <div class="clearfix lineButton">
+                        <div class="col-md-12 input-group">
+                            <button class="btn btn-primary" type="submit">
+                                <i class="ace-icon fa fa-check bigger-110"></i>
+                                Lưu
+                            </button>
+                            <a href='@Url.Action("Index", new {AreaCode = ViewBag.AreaCodeValue})' class="btn btn-yellow">
+                                <i class="ace-icon fa fa-chevron-circle-left bigger-110"></i>
+                            Quay lại
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <!-- /.pull-left -->
+            </div>
+            <!-- /.ace-settings-box -->
+        </div>
+    }
+</div>
+
+@section scripts{
+    <script>
+    $(document).ready(function () {
+        $("#Countinue").click(function () {
+            $("#SaveAndCountinue").val("true");
+        });
+
+            $(".chkCheckBox").click(function() {
+                var cmd = $(this);
+                cmd.parent().parent().find('ul li input[type=checkbox]').prop('checked', cmd.is(':checked'));
+            });
+
+            $("span.liMenuFunction").click(function() {
+                var cmd = $(this);
+                cmd.parent().find('ul li span.liMenuFunction').parent().parent().fadeToggle();
+            });
+
+           $("#frmUser").submit(function () {
+                var lstId = "";
+
+                $("input[name='chkCheckBox']").each(function() {
+                    var cmd = $(this);
+                    var id = cmd.prop("value");
+
+                    if ($(this).is(":checked")) {
+                        lstId = lstId + id + ";";
+                    }
+                });
+
+                $("#RoleIds").val(lstId);
+           });
+
+        $('#ddlGroup').change(function () {
+            var str = '';
+            var cmd = $(this);
+            cmd.parent().find('ul.multiselect-container li.active').each(function () {
+                var _cmd = $(this);
+                str += _cmd.find('input[type=checkbox]').val() + ',';
+            });
+            $('#groupids').val(str);
+        });
+    });
+    </script>
+}

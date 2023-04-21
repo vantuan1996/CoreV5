@@ -1,0 +1,46 @@
+﻿
+@model Test_Library.Models.RoleSelectedModel
+
+<ul class="submenufunction">
+    @{
+        if (Model.Data_Child.Any())
+        {
+
+            foreach (var item in Model.Data_Child.OrderBy(n => n.OrderNumber))
+            {
+                var datachild = Model.Data_Tree.Where(n => n.ParentId == item.Id).ToList();
+                <li>
+                    <label style="margin-bottom: 0px;">
+                        <input @string.Format("{0}", Model.Selected.Contains(item.Id) ? "checked" : "") type="checkbox" name="chkCheckBox" id="chkCheckBox" value="@item.Id" class="ace chkCheckBox" />
+                        <span class="lbl"></span>
+                    </label>
+                    <span class="liMenuFunction" style="color: #666;">
+                        @if (item.Active)
+                        {
+                            <span>@item.OrderNumber</span> <span>. @item.MenuName</span>
+                        }
+                        else
+                        {
+                            <span style="text-decoration:line-through">
+                                <span>@item.OrderNumber</span> <span>. @item.MenuName</span>
+                            </span>
+                        }
+
+                    </span>
+                    @if (datachild.Any())
+                    {
+                        @await Html.PartialAsync("MenuFunctionChild", new Test_Library.Models.RoleSelectedModel()
+                   {
+                        Data_Tree = Model.Data_Tree,
+                        Data_Child = datachild,
+                        Selected = Model.Selected
+                         })
+                    }
+                </li>
+
+            }
+
+        }
+    }
+
+</ul>
