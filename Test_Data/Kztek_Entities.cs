@@ -14,30 +14,17 @@ namespace Test_Data
         {
 
         }
-        //Main
-        public DbSet<User> Users { get; set; }
-
-        public DbSet<Role> Roles { get; set; }
-        public DbSet<UserRole> UserRoles { get; set; }
-        public DbSet<RoleMenu> RoleMenus { get; set; }
-        public DbSet<MenuFunction> SY_MenuFunctions { get; set; }
-        public DbSet<TEMP_BAO_CAO_TONG_HONG> TEMP_BAO_CAO_TONG_HONGs { get; set; }
-        public DbSet<MenuFunctionConfig> MenuFunctionConfigs { get; set; }
-        public DbSet<menuFontend> ImenuFonteds { get; set; }
+        //Main  
+        public DbSet<Member> Member { get; set; }
+        public DbSet<Employees> Employees { get; set; }
+        public DbSet<Message> Messages { get; set; }
+      
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
 
-            //modelBuilder.Entity<tblSystemConfig>(entity =>
-            //{
-            //    entity.Ignore(e => e.SortOrder);
-            //});
-
-            //modelBuilder.Entity<tbl_Event>(entity =>
-            //{
-
-            //});
+           
         }
 
     }

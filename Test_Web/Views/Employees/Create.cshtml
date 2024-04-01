@@ -1,0 +1,24 @@
+﻿
+@model Test_Model.Models.Employees
+
+@await Html.PartialAsync("Partial_Action", new Test_Library.Models.PartialActionModel<Test_Model.Models.Employees>()
+{
+    Model = Model,
+    Controller = "Employees",
+    Action = "Create",
+    Page = 1,
+   
+
+})
+@section scripts{
+   
+    <script>$(document).ready(function () {
+            $("#Countinue").click(function () {
+                $("#SaveAndCountinue").val('true');
+            });
+
+            $("#BackToList").click(function () {
+                $("#SaveAndCountinue").val('false');
+            });
+        });</script>
+}

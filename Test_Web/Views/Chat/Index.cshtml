@@ -1,0 +1,19 @@
+﻿
+<div class="page-header">
+    <h1>
+        Chat
+    </h1>
+</div>
+
+<div id="chatContent"></div>
+
+<input type="text" id="userInput" placeholder="Sender" />
+<input type="text" id="receiverInput" placeholder="Receiver" />
+<input type="text" id="messageInput" placeholder="Message" />
+<button id="sendButton">Send Message</button>
+
+@section scripts{
+    <script src="~/js/signalr/dist/browser/signalr.js"></script>
+    <script src="~/custom/chat.js"></script>
+
+}

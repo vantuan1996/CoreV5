@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Test_Library.Configs;
+using Test_Library.Extensions;
 using Test_Library.Models;
 using Test_Library.Security;
 using Test_Model.Models;
@@ -15,43 +16,39 @@ namespace Test_Web.Controllers
 {
     public class LoginController : Controller
     {
-        private IUserService _UserService;
-        public LoginController(IUserService _UserService)
+        private IMemberService _MemberService;
+        public LoginController(IMemberService _MemberService)
         {
-            this._UserService = _UserService;
+            this._MemberService = _MemberService;
         }
 
         [HttpGet]
         public async Task<IActionResult> Index()
         {
-            var data = await _UserService.GetAll();
+            var data = await _MemberService.GetAll();
             var model = new AuthModel();
-            model.isAny = data.Any();
-           
-            //   model.Data_Service = Data_Service();
-            model.AreaCode = "Admin";
+
             return View(model);
         }
         [HttpPost]
         public async Task<IActionResult> Index(AuthModel model)
         {
-            var data = await _UserService.GetAll();
-            model.isAny = data.Any();
-            // model.Data_Service = Data_Service();
+            var data = await _MemberService.GetAll();
+       
 
             if (!ModelState.IsValid)
             {
                 return View(model);
             }
 
-            var objUser = new User();
-            var result = await _UserService.Login(model, out objUser);
+            var objUser = new Member();
+            var result = await _MemberService.Login(model, out objUser);
             if (result.isSuccess)
             {
                 Session_Cookie(model, objUser);
-                //lưu areacode vào cookie
-                CookieAreaLastLogin(model.AreaCode);
-                return RedirectToAction("Index", "Home" , new { Area = "Admin"});
+                ////lưu areacode vào cookie
+                //CookieAreaLastLogin(model.AreaCode);
+                return RedirectToAction("Index", "Employees");
             }
             else
             {
@@ -67,13 +64,58 @@ namespace Test_Web.Controllers
             HttpContext.Response.Cookies.Append(CookieConfig.Kz_UserCookie, areaCode);
         }
 
-        private void Session_Cookie(AuthModel model, User objUser)
+        [HttpGet]
+        public IActionResult Register()
+        {
+            var model = new RegisterModel();
+            model.isAny = _MemberService.GetAll().Result.Any();
+          
+
+            return View(model);
+        }
+        [HttpPost]
+        public IActionResult Register(RegisterModel model)
+        {
+            model.isAny = _MemberService.GetAll().Result.Any();
+       
+
+            //Kiểm tra mật khẩu
+            if (model.Password != model.RePassword)
+            {
+                ModelState.AddModelError("", "Mật khẩu không khớp");
+                return View(model);
+            }
+
+            var salat = Guid.NewGuid().ToString();
+
+            var obj = new Member()
+            {              
+                Name = model.Name,
+                Username = model.Username,
+                Password = model.Password.PasswordHashed(salat),
+                PasswordSalat = salat
+              
+            };
+
+            var result = _MemberService.Create(obj).Result;
+
+            if (result.isSuccess)
+            {
+                return RedirectToAction("Index", "Login");
+            }
+            else
+            {
+                ModelState.AddModelError("", result.Message);
+                return View(model);
+            }
+        }
+
+        private void Session_Cookie(AuthModel model, Member objUser)
         {
             var sessionUser = new SessionModel
             {
-                UserId = objUser.Id,
-                Avatar = objUser.UserAvatar,
-                isAdmin = objUser.Admin,
+                UserId = objUser.PersonID.ToString(),
+                Avatar = "",     
                 Name = objUser.Name,
                 Username = objUser.Username
             };
@@ -85,23 +127,7 @@ namespace Test_Web.Controllers
             //Lưu lại trong session
             HttpContext.Session.SetString(SessionConfig.Kz_UserSession, encryptModel);
 
-            // Kiểm tra có lưu cookie k
-            if (model.isRemember)
-            {
-                var option = new CookieOptions();
-                option.Expires = DateTime.Now.AddMonths(1);
-                HttpContext.Response.Cookies.Append(CookieConfig.Kz_UserCookie, encryptModel);
-            }
-         
         }
-        //private void updateDatabase()
-        //{
-        //    throw new NotImplementedException();
-        //}
-
-        //private List<SelectListModel> Data_Service()
-        //{
-        //    throw new NotImplementedException();
-        //}
+       
     }
 }

@@ -1,0 +1,141 @@
+﻿@model Test_Core.Models.GridModel<Test_Model.Models.Employees>
+@using Test_Library.Models
+@*@{ var authModel = (Test_Library.Models.AuthActionModel)ViewBag.AuthValue; }*@
+
+<div class="page-header">
+    <h1>
+        Danh sách thành viên
+    </h1>
+</div>
+<div class="hr hr-18 dotted hr-24"></div>
+<div class="row">
+    <div class="col-xs-12">
+        @await Html.PartialAsync("~/Views/Shared/Partials/ActionPartial.cshtml", new Test_Library.Models.AuthPartialModel()
+        {
+           ControllerName = "Employees",
+           ActionName = "Create",
+           RecordId = "",
+           model = new { },
+         
+       })
+        <a href='/Employees/GetData' class="btn btn-white btn-success">
+            <i class=" fa fa-id-card"></i>  Call Api Livescore
+        </a>
+        <a href='/Chat' class="btn btn-white btn-default">
+            <i class="fa fa-comments-o"></i> Chat
+        </a>
+    </div>
+</div>
+@using (Html.BeginForm("Index", "Employees", FormMethod.Get, new { id = "frmEmployees" }))
+{
+    <div class="hr hr-18 dotted hr-24"></div>
+
+    <div class="row" id="txttable">
+        <div class="col-xs-12">
+            <table class="table  table-bordered table-hover">
+                <thead>
+                    <tr>
+                        <th class="text-center">Tên</th>
+                        <th class="text-center">Tuổi</th>
+                        <th class="text-center">Mô tả</th>
+                        <th class="text-center">Ngày tạo</th>
+                        <th class="text-center">Ngày sửa</th>
+                        <th class="text-center" width="80"> </th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @if (Model.datas.Any())
+                    {
+                        foreach (var item in Model.datas)
+                        {
+                            <tr class="">
+                                <td class="text-left">
+                                    @item.FullName
+                                </td>
+                                <td class="text-left">
+                                    @item.Age
+                                </td>
+
+                                <td class="text-left">
+                                    @item.Note
+                                </td>
+                                <td class="text-left">
+                                    @item.CreatedAt
+                                </td>
+                                <td class="text-left">
+                                    @item.UpdateAt
+                                </td>
+                                <td class="center">
+                                    <div class="btn-group">
+                                        @await Html.PartialAsync("~/Views/Shared/Partials/ActionPartial.cshtml", new Test_Library.Models.AuthPartialModel()
+                                   {
+                                       ControllerName = "Employees",
+                                       ActionName = "Update",
+                                       RecordId = "",
+                                       model = new { id = item.Id.ToString() }
+                                       //Auth_Value = authModel
+                                   })
+
+                                        @await Html.PartialAsync("~/Views/Shared/Partials/ActionPartial.cshtml", new Test_Library.Models.AuthPartialModel()
+                                   {
+                                       ControllerName = "Employees",
+                                       ActionName = "Delete",
+                                       RecordId = item.Id.ToString(),
+                                       model = null
+                                       //Auth_Value = authModel
+                                   })
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div><!-- /.span -->
+        @if (Model.datas.Any())
+        {
+            <div class="col-xs-12">
+                <div class="pull-right">
+                    @Html.PagingFooter(Model.Totapage, Model.pageNumber, Model.pageSize, "pagination", x => Url.Action("Index", "Employees", new
+               {
+                   page = x,
+                   key = ViewBag.keyValue,
+                   pc = ViewBag.pcValue
+               }))
+                </div>
+            </div>}
+    </div><!-- /.row -->
+    <input type="hidden" id="Confirm_delete" value="Bạn có muốn xóa bản ghi này không?" />
+                    <input type="hidden" id="del_Success" value="Xóa thành công" />
+                                    <input type="hidden" id="noti" value="Thông báo" />
+                                                    @section scripts{
+                                                        <script>
+
+
+                                                            $(document).ready(function () {
+                                                             
+
+                                                                
+                                                                $(".btnDelete").click(function () {
+                                                                    var cmd = $(this);
+                                                                    var id = cmd.attr('idata');
+
+                                                                    bootbox.confirm($("#Confirm_delete").val(), function (result) {
+                                                                        if (result) {
+                                                                            JSHelper.AJAX_Delete('/Employees/Delete', id)
+                                                                                .success(function (response) {
+                                                                                    if (response.isSuccess) {
+                                                                                        cmd.parent().parent().parent().fadeOut();
+                                                                                        toastr.success($("#del_Success").val(), $("#noti").val())
+                                                                                    } else {
+                                                                                        toastr.error(response.Message)
+                                                                                    }
+                                                                                });
+                                                                        }
+                                                                    })
+                                                                });
+                                                            });
+                                                        </script>
+                                                    }
+                                                }

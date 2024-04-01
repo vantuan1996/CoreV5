@@ -1,0 +1,57 @@
+﻿@model Test_Library.Models.Root
+
+<div class="page-header">
+    <h1>
+        Dữ liệu Live
+    </h1>
+</div>
+<style>
+    .custome {
+        max-height: 300px; /* Set the maximum height of the container */
+        overflow-y: scroll; /* Enable vertical scrolling */
+    }
+    .custome td {
+        padding: 8px; /* Adjust the padding as needed */
+        text-align: left; /* Align the table cells */
+        white-space: nowrap; /* Prevent the text from wrapping within cells */
+    }
+</style>
+@using (Html.BeginForm("GetData", "Employees", FormMethod.Get, new { id = "frmEmployees" }))
+{
+    <div class="hr hr-18 dotted hr-24"></div>
+
+    <div class="row custome" id="txttable" >
+        <div class="col-xs-12">
+            <table class="table  table-bordered table-hover custome">
+                <thead>
+                    <tr>
+                        <th class="text-center">Code</th>
+                        <th class="text-center">Message</th>
+                        <th class="text-center">Detail</th>
+                       
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    <tr class="">
+                        <td class="text-left">
+                            @Model.code
+                        </td>
+                        <td class="text-left">
+                            @Model.message
+                        </td>
+
+                        <td class="text-left">
+                           @Json.Serialize(Model.data)
+                        </td>                  
+                    </tr>
+
+                </tbody>
+            </table>
+        </div><!-- /.span -->
+     
+    </div><!-- /.row -->
+    
+    
+}

@@ -1,0 +1,46 @@
+﻿CREATE DATABASE [DemoOKVIP]
+
+USE [DemoOKVIP]
+GO
+
+CREATE TABLE [dbo].[Employees](
+	[Id] [varchar](255) NOT NULL,
+	[FullName] [varchar](255) NULL,
+	[Age] [int] NULL,
+	[Note] [nvarchar](255) NULL,
+	[CreatedBy] [nvarchar](255) NULL,
+	[CreatedAt] [datetime] NULL,
+	[UpdateBy] [nvarchar](255) NULL,
+	[UpdateAt] [datetime] NULL,
+	[Adress] [nvarchar](255) NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+
+CREATE TABLE [dbo].[Member](
+	[PersonID] [int] IDENTITY(1,1) NOT NULL,
+	[Username] [varchar](255) NULL,
+	[Password] [varchar](255) NULL,
+	[Name] [varchar](255) NULL,
+	[PasswordSalat] [varchar](255) NULL,
+	[DateCreated] [datetime] NULL,
+	[Email] [varchar](255) NULL
+) ON [PRIMARY]
+GO
+
+CREATE TABLE [dbo].[Message](
+	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[Sender] [nvarchar](250) NULL,
+	[Receiver] [nvarchar](250) NULL,
+	[Content] [nvarchar](max) NULL,
+	[SentAt] [datetime] NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO

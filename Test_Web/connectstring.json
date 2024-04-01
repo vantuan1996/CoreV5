@@ -1,7 +1,7 @@
 ﻿{
   "ConnectionStrings": {
     //"DefaultConnection": "Data Source=103.127.207.247;Initial Catalog=XC;User Id=sa;Password=Kztek@123456;MultipleActiveResultSets=True",
-    "DefaultConnection": "Data Source=localhost;Initial Catalog=ServicesManagement_XC;User Id=sa;Password=0975067057;MultipleActiveResultSets=True",
+    "DefaultConnection": "Data Source=localhost;Initial Catalog=DemoOKVIP;User Id=sa;Password=123456;MultipleActiveResultSets=True",
     "DefaultType": "SQLSERVER"
   }
 }

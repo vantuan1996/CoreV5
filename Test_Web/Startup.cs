@@ -24,6 +24,8 @@ using System.Text;
 using Test_Core.Models;
 using Microsoft.Net.Http.Headers;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Test_Web.Hubs;
+using Test_Web.Controllers;
 
 namespace Test_Web
 {
@@ -83,7 +85,11 @@ namespace Test_Web
   })
 );
             services.AddRazorPages();
+            // Đăng ký ChatController và ChatHub
+            //services.AddScoped<ChatController>();
+            services.AddScoped<ChatHub>();
             services.AddSession();
+            services.AddSignalR(); // Thêm cấu hình SignalR
             services.AddMemoryCache();
             services.AddSingleton<CacheHelper>();
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
@@ -124,11 +130,11 @@ namespace Test_Web
             //services.AddScoped<IDependencyTwoThatIsDependentOnDependencyOne, DependencyTwoThatIsDependentOnDependencyOne>();
             var builder = new ContainerBuilder();
            
-            builder.RegisterAssemblyTypes(typeof(UserRepository).Assembly).Where(t => t.Name.EndsWith("Repository")).AsImplementedInterfaces().InstancePerLifetimeScope();
+            builder.RegisterAssemblyTypes(typeof(MemberRepository).Assembly).Where(t => t.Name.EndsWith("Repository")).AsImplementedInterfaces().InstancePerLifetimeScope();
 
             // back end
 
-            builder.RegisterAssemblyTypes(typeof(Test_Service.Admin.Database.SQLSERVER.UserService).Assembly)
+            builder.RegisterAssemblyTypes(typeof(Test_Service.Admin.Database.SQLSERVER.MemberService).Assembly)
                 .Where(t => t.Name.EndsWith("Service") && t.Namespace.Contains("Admin"))
                 .AsImplementedInterfaces().InstancePerLifetimeScope();
 
@@ -172,13 +178,20 @@ namespace Test_Web
             //app.UseCookiePolicy();
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapControllerRoute(
-                name: "Admin",
-                pattern: "{area:exists}/{controller=Home}/{action=Index}/{id?}");
+                //endpoints.MapControllerRoute(
+                //name: "",
+                //pattern: "{area:exists}/{controller=Home}/{action=Index}/{id?}");
 
                 endpoints.MapControllerRoute(
                 name: "default",
-                pattern: "{controller=Home}/{action=Index}/{id?}");
+                pattern: "{controller=Login}/{action=Index}/{id?}");
+            });
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapControllerRoute(
+                    name: "default",
+                    pattern: "{controller=Home}/{action=Index}/{id?}");
+                endpoints.MapHub<ChatHub>("/chathub"); // Map đường dẫn cho ChatHub
             });
         }
     }

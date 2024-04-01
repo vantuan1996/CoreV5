@@ -10,7 +10,7 @@
         <div class="widget-main">
             <h4 class="header blue lighter bigger">
                 <span class="" style="color: #2f304d;">
-                    WEBTEST
+                    Demo
                 </span>
             </h4>
 
@@ -42,11 +42,7 @@
 
 
                     <div class="clearfix">
-                        <label class="inline">
-                            @Html.CheckBoxFor(n => n.isRemember, new { @class = "ace" })
-                            <span class="lbl"> @await LanguageHelper.GetLanguageText("LOGIN:remember")</span>
-                        </label>
-
+                      
                         <button type="submit" class="width-35 pull-right btn btn-sm btn-primary">
                             <i class="ace-icon fa fa-key"></i>
                             <span class="bigger-110">@await LanguageHelper.GetLanguageText("LOGIN:submit")</span>
@@ -59,8 +55,8 @@
         </div><!-- /.widget-main -->
 
         @{
-            if (Model.isAny == false)
-            {
+            //if (Model.isAny == false)
+            //{
                 <div class="toolbar clearfix">
 
                     <div>
@@ -70,7 +66,7 @@
                         </a>
                     </div>
                 </div>
-            }
+            @*}*@
         }
 
     </div><!-- /.widget-body -->
